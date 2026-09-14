@@ -171,7 +171,7 @@ public class ComplexMatrix {
         return new ComplexMatrix(inv);
     }
     public Complex determinant() {
-        if (isSquare()) {
+        if (!isSquare()) {
             throw new IllegalArgumentException("Матрица не квадратная");
         }
         int n = rows;
