@@ -1,23 +1,29 @@
 public class ComplexMatrix {
-    private Complex[][] data;
+    private final Complex[][] data;
     private final int rows;
     private final int cols;
-    private static final Complex ZERO = new Complex(0, 0);
+    private static final double EPS = 1e-12;
 
     public boolean isSquare() {
         return rows == cols;
     }
     public ComplexMatrix(int rows, int cols) {
+        if (rows <= 0 || cols <= 0) {
+            throw new IllegalArgumentException("Размеры должны быть > 0");
+        }
         this.rows = rows;
         this.cols = cols;
         this.data = new Complex[rows][cols];
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                data[i][j] = ZERO;
+                data[i][j] = new Complex(0, 0);
             }
         }
     }
     ComplexMatrix(Complex[][] data) {
+        if (data == null || data.length == 0) {
+            throw new IllegalArgumentException("Пустой массив");
+        }
         this.rows = data.length;
         this.cols = data[0].length;
         this.data = new Complex[rows][cols];
@@ -41,15 +47,23 @@ public class ComplexMatrix {
     }
     @Override
     public String toString() {
-        String[] lines = new String[rows];
+        int width = 0;
         for (int i = 0; i < rows; i++) {
-            String[] line = new String[cols];
             for (int j = 0; j < cols; j++) {
-                line[j] = String.format("%12s", data[i][j].toString());
+                width = Math.max(width, data[i][j].toString().length());
             }
-            lines[i] = String.join("", line);
         }
-        return String.join("\n", lines)+"\n";
+
+        String fmt = "%" + (width + 2) + "s";
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                sb.append(String.format(fmt, data[i][j]));
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
     }
     public ComplexMatrix add(ComplexMatrix other) {
         if (rows != other.rows || cols != other.cols) {
@@ -104,6 +118,11 @@ public class ComplexMatrix {
         if (!other.isSquare()) {
             throw new IllegalArgumentException("Делитель не квадрат");
         }
+        if (this.cols != other.rows) {
+            throw new IllegalArgumentException(
+                    "Для A / B требуется равенство столбцов A и строк B, " +
+                            "получено " + this.cols + " и " + other.rows);
+        }
         return this.mul(other.inverse());
     }
     public ComplexMatrix transpose() {
@@ -127,8 +146,6 @@ public class ComplexMatrix {
                 aug[i][j] = (i == j-n) ? new Complex(1, 0) : new Complex(0, 0);
             }
         }
-
-        final double EPS = 1e-12;
 
         for (int col = 0; col < n; col++) {
             int pivotRow = col;
@@ -157,7 +174,7 @@ public class ComplexMatrix {
             for (int r = 0; r < n; r++) {
                 if (r == col) continue;
                 Complex factor = aug[r][col];
-                if (factor.isZero()) continue;
+                if (factor.abs() < EPS) continue;
                 for (int j = 0; j < 2 * n; j++) {
                     aug[r][j] = aug[r][j].sub(factor.mul(aug[col][j]));
                 }
@@ -181,7 +198,6 @@ public class ComplexMatrix {
             System.arraycopy(data[i], 0, a[i], 0, n);
         }
 
-        final double EPS = 1e-12;
         int sign = 1;
 
         for (int col = 0; col < n; col++) {

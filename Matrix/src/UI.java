@@ -37,7 +37,15 @@ public class UI {
 
     public static ComplexMatrix readMatrix(String name) {
         int rows = readInt("Строк у " + name + ": ");
+        while (rows <= 0) {
+            System.out.println("Число строк должно быть положительным");
+            rows = readInt("Строк у " + name + ": ");
+        }
         int cols = readInt("Столбцов у " + name + ": ");
+        while (cols <= 0) {
+            System.out.println("Число столбцов должно быть положительным");
+            cols = readInt("Столбцов у " + name + ": ");
+        }
 
         Complex[][] data = new Complex[rows][cols];
         for (int i = 0; i < rows; i++) {
@@ -63,6 +71,8 @@ public class UI {
         System.out.println("10. Детерменировать A");
         System.out.println("11. Транспонировать B");
         System.out.println("12. Детерменировать B");
+        System.out.println("13. Умножить матрицу A на скаляр");
+        System.out.println("14. Умножить матрицу B на скаляр");
         System.out.println("0. Выход");
     }
 
@@ -114,6 +124,16 @@ public class UI {
             }
             case 12: {
                 System.out.println("det(B) = " + requireB().determinant());
+                break;
+            }
+            case 13: {
+                Complex k = readComplex();
+                printResult("k · A", requireA().scalarMul(k));
+                break;
+            }
+            case 14: {
+                Complex k = readComplex();
+                printResult("k · B", requireB().scalarMul(k));
                 break;
             }
             default: {
