@@ -30,16 +30,15 @@ public class Complex {
         return new Complex(newRe, newIm);
     }
     public Complex div(Complex other) {
-        this.re = normalizeZero(re);
-        this.im = normalizeZero(im);
         double denm = other.re * other.re + other.im * other.im;
-        if (denm < EPS) {
+        if (denm < EPS * EPS) {
             throw new ArithmeticException("Деление на ноль");
         }
         double newRe = (this.re * other.re + this.im * other.im) / denm;
         double newIm = (this.im * other.re - this.re * other.im) / denm;
         return new Complex(newRe, newIm);
     }
+
     public double abs() {
         return Math.sqrt(re * re + im * im);
     }
@@ -51,9 +50,9 @@ public class Complex {
     }
     @Override
     public String toString() {
-        if (im < EPS) {
+        if (Math.abs(im) < EPS) {
             return String.format("%.2f", re);
-        } else if (re < EPS) {
+        } else if (Math.abs(re) < EPS) {
             return String.format("%.2fi", im);
         } else {
             if (im > 0) {

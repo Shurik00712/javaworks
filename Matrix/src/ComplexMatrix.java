@@ -7,6 +7,9 @@ public class ComplexMatrix {
     public boolean isSquare() {
         return rows == cols;
     }
+    private static Complex copy(Complex c) {
+        return c == null ? null : new Complex(c.getRe(), c.getIm());
+    }
     public ComplexMatrix(int rows, int cols) {
         if (rows <= 0 || cols <= 0) {
             throw new IllegalArgumentException("Размеры должны быть > 0");
@@ -28,7 +31,12 @@ public class ComplexMatrix {
         this.cols = data[0].length;
         this.data = new Complex[rows][cols];
         for (int i = 0; i < rows; i++) {
-            System.arraycopy(data[i], 0, this.data[i], 0, cols);
+            if (data[i].length != cols) {
+                throw new IllegalArgumentException("Разная длина строк");
+            }
+            for (int j = 0; j < cols; j++) {
+                this.data[i][j] = copy(data[i][j]);
+            }
         }
     }
     public int getRows() { return rows; }
@@ -37,13 +45,13 @@ public class ComplexMatrix {
         if (i < 0 || i >= rows || j < 0 || j >= cols) {
             throw new IndexOutOfBoundsException("Вышел за границы");
         }
-        return data[i][j];
+        return copy(data[i][j]);
     }
     public void set(int i, int j, Complex value) {
         if (i < 0 || i >= rows || j < 0 || j >= cols) {
             throw new IndexOutOfBoundsException("Вышел за границы");
         }
-        data[i][j] = value;
+        data[i][j] = copy(value);
     }
     @Override
     public String toString() {
@@ -141,9 +149,11 @@ public class ComplexMatrix {
         int n = rows;
         Complex[][] aug = new Complex[n][2 * n];
         for (int i = 0; i < n; i++) {
-            System.arraycopy(data[i], 0, aug[i], 0, n);
-            for (int j = n; j < 2*n; j++) {
-                aug[i][j] = (i == j-n) ? new Complex(1, 0) : new Complex(0, 0);
+            for (int j = 0; j < n; j++) {
+                aug[i][j] = copy(data[i][j]);
+            }
+            for (int j = n; j < 2 * n; j++) {
+                aug[i][j] = (i == j - n) ? new Complex(1, 0) : new Complex(0, 0);
             }
         }
 
@@ -183,7 +193,9 @@ public class ComplexMatrix {
 
         Complex[][] inv = new Complex[n][n];
         for (int i = 0; i < n; i++) {
-            System.arraycopy(aug[i], n, inv[i], 0, n);
+            for (int j = 0; j < n; j++) {
+                inv[i][j] = aug[i][n + j];
+            }
         }
         return new ComplexMatrix(inv);
     }
@@ -195,7 +207,9 @@ public class ComplexMatrix {
 
         Complex[][] a = new Complex[n][n];
         for (int i = 0; i < n; i++) {
-            System.arraycopy(data[i], 0, a[i], 0, n);
+            for (int j = 0; j < n; j++) {
+                a[i][j] = copy(data[i][j]);
+            }
         }
 
         int sign = 1;
