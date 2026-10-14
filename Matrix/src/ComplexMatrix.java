@@ -10,6 +10,9 @@ public class ComplexMatrix {
     private static Complex copy(Complex c) {
         return c == null ? null : new Complex(c.getRe(), c.getIm());
     }
+    public ComplexMatrix copy() {
+        return new ComplexMatrix(this.data);
+    }
     public ComplexMatrix(int rows, int cols) {
         if (rows <= 0 || cols <= 0) {
             throw new IllegalArgumentException("Размеры должны быть > 0");
