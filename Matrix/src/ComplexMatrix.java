@@ -207,6 +207,9 @@ public class ComplexMatrix {
             throw new IllegalArgumentException("Матрица не квадратная");
         }
         int n = rows;
+        if (n == 2) {
+            return data[0][0].mul(data[1][1]).sub(data[0][1].mul(data[1][0]));
+        }
 
         Complex[][] a = new Complex[n][n];
         for (int i = 0; i < n; i++) {
